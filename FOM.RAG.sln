@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35728.132 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FOM.RAG.Demonstrator", "FOM.RAG.Demonstrator\FOM.RAG.Demonstrator.csproj", "{4308816E-E600-426B-8F0B-DB29F8FE47A5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Crawlers", "Crawlers", "{E846A8AC-00E5-4082-A18A-F3144C0EA495}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Zendesk", "Zendesk", "{25318B8F-AE62-4583-8F4A-DD94876D30F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zendesk.ApiClient", "Zendesk.ApiClient\Zendesk.ApiClient.csproj", "{8003F644-4CE2-4373-975E-3F3EFBB3BBD8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zendesk.ApiCrawler", "Zendesk.ApiCrawler\Zendesk.ApiCrawler.csproj", "{1AD53C5D-905F-4DD9-A758-DD326CE44B00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FOM.RAG.CrawlerOrchestrator", "FOM.RAG.CrawlerOrchestrator\FOM.RAG.CrawlerOrchestrator.csproj", "{A46DFF01-BF3F-4DCD-8D5C-1536E621B2B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FOM.RAG.CrawlerOrchestrator.Abstractions", "FOM.RAG.CrawlerOrchestrator.Abstractions\FOM.RAG.CrawlerOrchestrator.Abstractions.csproj", "{4204E65C-0A3E-4A78-A594-BC7D5DE6E9F5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4308816E-E600-426B-8F0B-DB29F8FE47A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4308816E-E600-426B-8F0B-DB29F8FE47A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4308816E-E600-426B-8F0B-DB29F8FE47A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4308816E-E600-426B-8F0B-DB29F8FE47A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8003F644-4CE2-4373-975E-3F3EFBB3BBD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8003F644-4CE2-4373-975E-3F3EFBB3BBD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8003F644-4CE2-4373-975E-3F3EFBB3BBD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8003F644-4CE2-4373-975E-3F3EFBB3BBD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AD53C5D-905F-4DD9-A758-DD326CE44B00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AD53C5D-905F-4DD9-A758-DD326CE44B00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AD53C5D-905F-4DD9-A758-DD326CE44B00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AD53C5D-905F-4DD9-A758-DD326CE44B00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A46DFF01-BF3F-4DCD-8D5C-1536E621B2B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A46DFF01-BF3F-4DCD-8D5C-1536E621B2B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A46DFF01-BF3F-4DCD-8D5C-1536E621B2B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A46DFF01-BF3F-4DCD-8D5C-1536E621B2B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4204E65C-0A3E-4A78-A594-BC7D5DE6E9F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4204E65C-0A3E-4A78-A594-BC7D5DE6E9F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4204E65C-0A3E-4A78-A594-BC7D5DE6E9F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4204E65C-0A3E-4A78-A594-BC7D5DE6E9F5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{25318B8F-AE62-4583-8F4A-DD94876D30F2} = {E846A8AC-00E5-4082-A18A-F3144C0EA495}
+		{8003F644-4CE2-4373-975E-3F3EFBB3BBD8} = {25318B8F-AE62-4583-8F4A-DD94876D30F2}
+		{1AD53C5D-905F-4DD9-A758-DD326CE44B00} = {25318B8F-AE62-4583-8F4A-DD94876D30F2}
+		{A46DFF01-BF3F-4DCD-8D5C-1536E621B2B4} = {E846A8AC-00E5-4082-A18A-F3144C0EA495}
+		{4204E65C-0A3E-4A78-A594-BC7D5DE6E9F5} = {E846A8AC-00E5-4082-A18A-F3144C0EA495}
+	EndGlobalSection
+EndGlobal

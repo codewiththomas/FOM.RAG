@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FOM.RAG.CrawlerOrchestrator.Abstractions\FOM.RAG.CrawlerOrchestrator.Abstractions.csproj" />
+    <ProjectReference Include="..\Zendesk.ApiClient\Zendesk.ApiClient.csproj" />
+  </ItemGroup>
+
+</Project>
