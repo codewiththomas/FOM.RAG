@@ -1,0 +1,210 @@
+﻿@page "/"
+@using FOM.RAG.Demonstrator.App.Contracts
+@using FOM.RAG.Demonstrator.App.Models
+@using OpenAI.Chat
+
+@implements IDisposable
+
+<div class="container">
+
+    <div class="row">
+
+        <div class="col-12">
+
+            <h1>Chat</h1>
+
+            <div class="chat-container">
+
+                <div class="chat-message p-3" id="chat-messages">
+
+                    @foreach (var message in chatHistory.Messages)
+                    {
+                        string role = message is UserChatMessage ? "user-message" : "assistant-message";
+                        <div class="message @(role)">
+                            <div class="message-header">
+                                <strong>@(role.ToLower() == "user-message" ? "Du" : "Tasiana")</strong>
+                                @* <span class="text-muted small ms-2">@message.Content[0]..ToString("g")</span> *@
+                            </div>
+                            <div class="message-content">
+                                @((MarkupString)FormatMessage(message?.Content[0].Text))
+                            </div>
+                        </div>
+                    }
+
+                    @if (isStreaming)
+                    {
+                        <div class="message assistant-message">
+                            <div class="message-header">
+                                <strong>Assistant</strong>
+                                <span class="text-muted small ms-2">@DateTime.Now.ToString("g")</span>
+                            </div>
+                            <div class="message-content">
+                                @((MarkupString)FormatMessage(streamedResponse))
+                            </div>
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+            <div class="chat-input-container mt-3">
+                <div class="input-group">
+                    <textarea @bind="userInput"
+                              @bind:event="oninput"
+                              @onkeydown="HandleKeyDown"
+                              class="form-control"
+                              placeholder="Type your message here..."
+                              rows="2"
+                              disabled="@isStreaming">
+                    </textarea>
+                    <button class="btn btn-primary"
+                            @onclick="SendMessage"
+                            disabled="@(isStreaming || string.IsNullOrWhiteSpace(userInput))">
+                        <i class="bi bi-send"></i> Send
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@code {
+    [Inject]
+    public required IJSRuntime JSRuntime { get; set; }
+
+    [Inject]
+    public required IChatService ChatService { get; set; }
+
+    private ChatHistory chatHistory = new ChatHistory();
+
+    private string userInput = "";
+    private string streamedResponse = "";
+    private bool isStreaming = false;
+    private CancellationTokenSource? cts;
+    private ElementReference chatMessagesRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await ScrollToBottom();
+    }
+
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(userInput) || isStreaming)
+            return;
+
+        // Add user message to history
+        chatHistory.AddMessage("user", userInput);
+
+        // Clear input
+        string currentUserInput = userInput;
+        userInput = "";
+
+        // Start streaming
+        isStreaming = true;
+        streamedResponse = "";
+
+        await InvokeAsync(StateHasChanged);
+        await ScrollToBottom();
+
+        // Create a new cancellation token source
+        cts = new CancellationTokenSource();
+
+        try
+        {
+            // Stream response
+            await foreach (var chunk in ChatService.StreamCompletionAsync(currentUserInput, chatHistory.Messages.ToList())
+                          .WithCancellation(cts.Token))
+            {
+                streamedResponse += chunk;
+                await InvokeAsync(StateHasChanged);
+                await ScrollToBottom();
+            }
+
+            // Add complete response to history
+            chatHistory.AddMessage("assistant", streamedResponse);
+            streamedResponse = "";
+            isStreaming = false;
+
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (OperationCanceledException)
+        {
+            // Handle cancellation if needed
+            streamedResponse = "";
+            isStreaming = false;
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            streamedResponse = $"Error: {ex.Message}";
+            isStreaming = false;
+            await InvokeAsync(StateHasChanged);
+        }
+        finally
+        {
+            cts?.Dispose();
+            cts = null;
+        }
+    }
+
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
+        {
+            // Only send when Enter is pressed without Shift
+            await SendMessage();
+        }
+    }
+
+    private string FormatMessage(string message)
+    {
+        // Simple markdown-like formatting
+        if (string.IsNullOrWhiteSpace(message))
+            return message;
+
+        // Convert code blocks
+        if (message.Contains("```"))
+        {
+            message = System.Text.RegularExpressions.Regex.Replace(
+                message,
+                @"```([^`]*?)```",
+                m => $"<pre class=\"code-block\"><code>{System.Web.HttpUtility.HtmlEncode(m.Groups[1].Value)}</code></pre>"
+            );
+        }
+
+        // Convert inline code
+        if (message.Contains("`"))
+        {
+            message = System.Text.RegularExpressions.Regex.Replace(
+                message,
+                @"`([^`]*?)`",
+                m => $"<code class=\"inline-code\">{System.Web.HttpUtility.HtmlEncode(m.Groups[1].Value)}</code>"
+            );
+        }
+
+        // Convert line breaks
+        message = message.Replace("\n", "<br />");
+
+        return message;
+    }
+
+
+    private async Task ScrollToBottom()
+    {
+        await JSRuntime.InvokeVoidAsync("scrollToBottom", "chat-messages");
+    }
+
+
+    public void Dispose()
+    {
+        cts?.Cancel();
+        cts?.Dispose();
+    }
+}

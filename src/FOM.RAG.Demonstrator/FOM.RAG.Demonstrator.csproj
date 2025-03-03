@@ -18,4 +18,10 @@
     <ProjectReference Include="..\FOM.RAG.CrawlerOrchestrator\FOM.RAG.CrawlerOrchestrator.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

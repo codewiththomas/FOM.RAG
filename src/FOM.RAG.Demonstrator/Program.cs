@@ -206,7 +206,9 @@ if (string.IsNullOrWhiteSpace(question))
 
 var ragService = new RagService(inMemoryVectorStore, openAiConfig);
 string answer = await ragService.AnswerQuestion(question);
+Console.WriteLine();
 Console.WriteLine(answer);
+Console.ReadKey();
 
 #endregion
 
