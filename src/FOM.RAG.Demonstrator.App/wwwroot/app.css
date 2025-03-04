@@ -67,6 +67,18 @@ h1:focus {
     height: 65vh;
     display: flex;
     flex-direction: column;
+    position: relative; /* Added to ensure proper element stacking */
+    overflow: hidden; /* Prevent content from spilling outside */
+}
+
+.chat-message {
+    flex: 1;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    padding: 1rem;
+    max-height: calc(65vh - 2rem); /* Account for padding */
+    display: flex;
+    flex-direction: column;
 }
 
 .chat-messages {
@@ -82,6 +94,7 @@ h1:focus {
     border-radius: 8px;
     max-width: 85%;
     position: relative;
+    overflow-wrap: break-word;
 }
 
 .user-message {
@@ -112,6 +125,9 @@ h1:focus {
 .chat-input-container {
     margin-top: 1rem;
     padding: 1rem;
+    background-color: white;
+    position: relative;
+    z-index: 10; /* Ensure input stays above the messages */
 }
 
 .code-block {
