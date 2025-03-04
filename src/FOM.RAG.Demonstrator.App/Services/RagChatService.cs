@@ -1,6 +1,7 @@
 ﻿using FOM.RAG.Demonstrator.App.Configuration;
 using FOM.RAG.Demonstrator.App.Contracts;
 using FOM.RAG.Demonstrator.App.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenAI.Chat;
 using OpenAI.Embeddings;
@@ -12,13 +13,16 @@ public class RagChatService : IChatService
 {
     private readonly InMemoryVectorStore _vectorStore;
     private readonly OpenAiConfiguration _openAiConfig;
+    private readonly ILogger _logger;
 
     public RagChatService(
         InMemoryVectorStore vectorStore,
+        ILogger<RagChatService> logger,
         IOptions<OpenAiConfiguration> openAiConfiguration)
     {
         _vectorStore = vectorStore;
         _openAiConfig = openAiConfiguration.Value;
+        _logger = logger;
     }
 
     public async Task<string> GetCompletionAsync(string userMessage, List<ChatMessage> history)
@@ -51,7 +55,8 @@ public class RagChatService : IChatService
 
     public async IAsyncEnumerable<string> StreamCompletionAsync(string userMessage, List<ChatMessage> history)
     {
-        var chatContext = await BuildRagContext(userMessage);
+        var chatContext = await BuildRagContext(userMessage, 5);
+        _logger.LogInformation("Context generated: {context}", chatContext);
 
         var messages = new List<ChatMessage>();
 
@@ -72,10 +77,13 @@ public class RagChatService : IChatService
         messages.Add(new UserChatMessage($"{chatContext}\n\nBased on the information above, please answer this question in German: {userMessage}"));
 
         var chatClient = new ChatClient(_openAiConfig.ChatModel, _openAiConfig.ApiKey);
+
+        _logger.LogInformation("Starting chat completion stream");
         var completionUpdates = chatClient.CompleteChatStreamingAsync(messages);
 
         await foreach (var update in completionUpdates)
         {
+            _logger.LogInformation("Received completion update: {update}", update);
             if (update.ContentUpdate.Count > 0 && !string.IsNullOrEmpty(update.ContentUpdate[0].Text))
             {
                 yield return update.ContentUpdate[0].Text;
@@ -87,11 +95,17 @@ public class RagChatService : IChatService
     {
         // Get embeddings for the question
         var embeddingClient = new EmbeddingClient(_openAiConfig.EmbeddingModel, _openAiConfig.ApiKey);
+
+        _logger.LogInformation("Generating embedding for question: {question}", question);
         OpenAIEmbedding questionEmbedding = embeddingClient.GenerateEmbedding(question);
+        _logger.LogInformation("Embedding generated: {embedding}", 
+            string.Join(",", questionEmbedding.ToFloats().ToArray().Select(x => x.ToString())));
 
         // Find similar chunks in the vector store
+        _logger.LogInformation("Finding similar embeddings in vector store");
         var similarEmbeddings = _vectorStore.FindSimilar(questionEmbedding.ToFloats(), maxContextChunks);
-
+        _logger.LogInformation("Results found: {i}", similarEmbeddings.Count);
+        
         if (similarEmbeddings.Count == 0)
         {
             return "CONTEXT INFORMATION:\nEs konnten keine relevanten Informationen zur Frage gefunden werden.";

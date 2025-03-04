@@ -15,8 +15,7 @@ builder.Services.Configure<DemonstratorConfiguration>(builder.Configuration.GetS
 builder.Services.Configure<OpenAiConfiguration>(builder.Configuration.GetSection("OpenAi"));
 
 builder.Services.AddSingleton<InMemoryVectorStore>();
-builder.Services.AddScoped<VectorStoreInitializer>();
-builder.Services.AddScoped<RagService>();
+builder.Services.AddSingleton<VectorStoreInitializer>();
 builder.Services.AddScoped<IChatService, RagChatService>();
 
 var app = builder.Build();
