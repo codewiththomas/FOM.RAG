@@ -98,7 +98,7 @@ if (isChunkingEnabled)
             string htmlContent = File.ReadAllText(htmlFile);
             var chunks = HtmlChunkExtractor.ExtractSectionChunks(
                 html: htmlContent, 
-                splitByHeaders: false);
+                splitByHeaders: true);
 
             string fileDirectory = Path.GetDirectoryName(htmlFile);
             string fileNameWithoutExt = Path.GetFileNameWithoutExtension(htmlFile);
