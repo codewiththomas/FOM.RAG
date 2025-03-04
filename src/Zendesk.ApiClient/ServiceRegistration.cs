@@ -19,7 +19,7 @@ public static class ServiceRegistration
         IConfiguration configuration)
     {
         services.Configure<ZendeskApiClientConfiguration>(
-            configuration.GetSection("ApiClientConfiguration"));
+            configuration.GetSection("ZendeskApiClientConfiguration"));
 
         services.AddHttpClient<ZendeskHttpClient>((provider, client) =>
         {
