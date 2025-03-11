@@ -69,6 +69,14 @@ public class ZendeskCrawler(IZendeskClient zendeskClient) : ICrawler
                 Categories = categories.ToArray(),
                 HtmlBody = article.Body ?? string.Empty
             };
+
+            if (!(
+                document.IdInOrigin == "6058829160977" ||  // Abkürzungen
+                document.IdInOrigin == "20126134747409"))  // PUBU
+            {
+                continue;
+            }
+
             documents.Add(document);
         }
 

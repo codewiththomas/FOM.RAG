@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OpenAI.Embeddings;
 using System.Globalization;
+using System.Text;
 
 // Demonstrator for a RAG project
 // Goal is to pull all Articles from Knowledge Sources (at the moment Zendesk Helpdesk Articles) and
@@ -95,10 +96,14 @@ if (isChunkingEnabled)
     {
         try
         {
+            //open corresponding CSV file to get document title:
+            //TODO: string csvContent
+
             string htmlContent = File.ReadAllText(htmlFile);
-            var chunks = HtmlChunkExtractor.ExtractSectionChunks(
-                html: htmlContent, 
-                splitByHeaders: true);
+            //var chunks = HtmlChunkExtractor.ExtractSectionChunks(
+            //    html: htmlContent, 
+            //    splitByHeaders: true);
+            var chunks = DocumentChunker.ExtractSectionChunksByHeader1orLength("NO TITLE", htmlContent);
 
             string fileDirectory = Path.GetDirectoryName(htmlFile);
             string fileNameWithoutExt = Path.GetFileNameWithoutExtension(htmlFile);
@@ -107,7 +112,17 @@ if (isChunkingEnabled)
                 // <OriginalName>_section_<hierarchy>.txt
                 string chunkFileName = $"{fileNameWithoutExt}_section_{chunk.HierarchyNumber}.txt";
                 string chunkFilePath = Path.Combine(fileDirectory, chunkFileName);
-                File.WriteAllText(chunkFilePath, $"Title: {chunk.Title}{Environment.NewLine}{Environment.NewLine}{chunk.PlainTextContent}");
+
+                var chunkContent = new StringBuilder();
+                chunkContent.AppendLine($"Document: {chunk.DocumentTitle}");
+                if (chunk.ParentSectionTitles.Length > 0)
+                {
+                    chunkContent.AppendLine($"Section: {string.Join(", ", chunk.ParentSectionTitles)}");
+                }
+                chunkContent.AppendLine($"Title: {chunk.SectionTitle}");
+                chunkContent.AppendLine($"Content: {chunk.PlainTextContent}");
+                
+                File.WriteAllText(chunkFilePath, chunkContent.ToString());
                 Console.WriteLine($"  Created chunk file: {chunkFileName}");
             }
         }
