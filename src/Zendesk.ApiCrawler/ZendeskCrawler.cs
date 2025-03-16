@@ -7,6 +7,37 @@ namespace Zendesk.ApiCrawler;
 
 public class ZendeskCrawler(IZendeskClient zendeskClient) : ICrawler
 {
+    public IReadOnlyList<string> IncludeArticleIds { get; private set; } = [];
+    public IReadOnlyList<string> ExcludeArticleIds { get; private set; } = [];
+
+
+    /// <inheritdoc />
+    public void IncludeArticleId(string articleId)
+    {
+        var includeArticleIds = IncludeArticleIds?.ToList() ?? [];
+        if (ExcludeArticleIds.Count > 0)
+        {
+            throw new Exception("Cannot include article id when exclude article ids are set.");
+        }
+        includeArticleIds.Add(articleId);
+        IncludeArticleIds = includeArticleIds;
+    }
+
+
+    /// <inheritdoc />
+    public void ExcludeArticleId(string articleId)
+    {
+        var excludeArticleIds = ExcludeArticleIds?.ToList() ?? [];
+        if (IncludeArticleIds.Count > 0)
+        {
+            throw new Exception("Cannot exclude article id when include article ids are set.");
+        }
+        excludeArticleIds.Add(articleId);
+        ExcludeArticleIds = excludeArticleIds;
+    }
+
+
+    /// <inheritdoc />
     public async Task<IEnumerable<IDocument>> CrawlAsync()
     {
         var allArticles = await zendeskClient.HelpCenter.Articles.GetListAsync();
@@ -69,13 +100,6 @@ public class ZendeskCrawler(IZendeskClient zendeskClient) : ICrawler
                 Categories = categories.ToArray(),
                 HtmlBody = article.Body ?? string.Empty
             };
-
-            if (!(
-                document.IdInOrigin == "6058829160977" ||  // Abkürzungen
-                document.IdInOrigin == "20126134747409"))  // PUBU
-            {
-                continue;
-            }
 
             documents.Add(document);
         }

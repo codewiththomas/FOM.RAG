@@ -100,9 +100,6 @@ if (isChunkingEnabled)
             //TODO: string csvContent
 
             string htmlContent = File.ReadAllText(htmlFile);
-            //var chunks = HtmlChunkExtractor.ExtractSectionChunks(
-            //    html: htmlContent, 
-            //    splitByHeaders: true);
             var chunks = DocumentChunker.ExtractSectionChunksByHeader1orLength("NO TITLE", htmlContent);
 
             string fileDirectory = Path.GetDirectoryName(htmlFile);
